@@ -1,12 +1,15 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "28a3b4b4-5605-4a30-b581-6cc6204f0b2e"
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "stock-management-front-end-project": {
       "projectType": "application",
       "schematics": {
-        "@schematics/angular:application": {
+         "@schematics/angular:application": {
           "strict": true
         }
       },
@@ -22,6 +25,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -100,7 +104,8 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.css"
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -109,6 +114,11 @@
           }
         }
       }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "style": "scss"
     }
   },
   "defaultProject": "stock-management-front-end-project"
