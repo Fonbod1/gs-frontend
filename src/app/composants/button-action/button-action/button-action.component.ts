@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-button-action',
@@ -6,10 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./button-action.component.scss']
 })
 export class ButtonActionComponent implements OnInit {
+  @Output()
+  clickEvent = new EventEmitter();
 
   constructor() { }
 
   ngOnInit(): void {
   }
+ bouttonNouveauClick(): void {
+    this.clickEvent.emit();
+   }
 
 }
