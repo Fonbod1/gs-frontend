@@ -4,11 +4,10 @@
       <h1>Commande clients/ fournisseurs</h1>
     </div>
     <div class="col-md-4 p-0 text-right">
-      <!--  <app-button-action></app-button-action>-->
-      <!-- <app-boutton-action
-         [isImporterVisible]="false"
-         [isNouveauVisible]="false"
-       ></app-boutton-action>-->
+        <app-button-action
+          (click)="nouvelleCommande()"
+        ></app-button-action>
+
     </div>
   </div>
   <div class="col">

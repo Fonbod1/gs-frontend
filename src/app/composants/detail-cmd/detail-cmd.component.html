@@ -1,37 +1,47 @@
-<div class="row mb-1 mr-0  custom-border">
-
-  <div class="col-md-3 border-right mb-1 mt-1 ">
-    <div class="col-row text-center">
+<div class="row mb-1 mr-0 custom-border">
+  <!--  Details article-->
+  <div class="col-md-3 custom-border-right mb-1 mt-1 ">
+    <div class="row text-center">
       <div class="col">Code article</div>
+      <!--<div class="col-md-11">{{ ligneCommande.article?.codeArticle }}</div>-->
     </div>
   </div>
 
-  <div class="col-md-3 border-right mb-1 mt-1">
+  <div class="col-md-3 custom-border-right mb-1 mt-1 ">
     <div class="row">
       <div class="col-md-12 text-center">
         Designation article
+        <!--{{ ligneCommande.article?.designation }}-->
       </div>
     </div>
   </div>
-  <div class="col-md-2 border-right mb-1 mt-1">
+
+  <div class="col-md-2 custom-border-right mb-1 mt-1 ">
     <div class="row">
       <div class="col-md-12 text-center">
         6
+        <!--{{ ligneCommande.quantite }}-->
       </div>
     </div>
   </div>
-  <div class="col-md-2 border-right mb-1 mt-1">
+
+  <div class="col-md-2 custom-border-right mb-1 mt-1 ">
     <div class="row">
       <div class="col-md-12 text-center">
         12.3
+        <!--{{ ligneCommande.prixUnitaire }}-->
       </div>
     </div>
-  <div class="col-md-2 border-right mb-1 mt-1">
-    <div class="row text-center">
-      73.8
+  </div>
+
+  <div class="col-md-2 mb-1 mt-1">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        73.8
+       <!-- {{ ligneCommande.prixUnitaire && ligneCommande.quantite ? +ligneCommande.prixUnitaire * +ligneCommande.quantite : '' }}-->
+      </div>
     </div>
   </div>
 </div>
-
 
 

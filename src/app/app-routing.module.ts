@@ -10,7 +10,11 @@ import { PageMvtstkComponent } from './pages/mvtstk/page-mvtstk/page-mvtstk.comp
 import { PageClientComponent } from './pages/client/page-client/page-client.component';
 import { PageFournisseurComponent } from './pages/fournisseur/page-fournisseur/page-fournisseur.component';
 import { NouveauCltFrsComponent } from './composants/nouveau-clt-frs/nouveau-clt-frs.component';
-
+import {PageProfilComponent} from "./pages/profil/page-profil/page-profil.component";
+import {PageCmdCltFrsComponent} from "./pages/page-cmd-clt-frs/page-cmd-clt-frs.component";
+import {NouvelleCmdCltFrsComponent} from "./composants/nouvelle-cmd-clt-frs/nouvelle-cmd-clt-frs.component";
+import {PageCategoriesComponent} from "./pages/categories/page-categories/page-categories.component";
+import {NouvelleCategoryComponent} from "./pages/categories/nouvelle-category/nouvelle-category.component";
 
 const routes: Routes = [
        { path: 'login', component: PageLoginComponent },
@@ -45,6 +49,14 @@ const routes: Routes = [
                   path: 'nouveauclient',
                   component: NouveauCltFrsComponent
                  },
+              {
+                path: 'commandesclient',
+                component: PageCmdCltFrsComponent
+              },
+              {
+                path: 'nouvellecommandeclt',
+                component: NouvelleCmdCltFrsComponent
+              },
                {
                  path: 'fournisseurs',
                  component: PageFournisseurComponent
@@ -52,9 +64,24 @@ const routes: Routes = [
               {
                 path: 'nouveaufournisseur',
                 component:  NouveauCltFrsComponent
-                }
-
-              ]
+                },
+              {
+                path: 'commandesfournisseur',
+                component:  PageCmdCltFrsComponent
+              },
+              {
+                path: 'nouvellecommandefrs',
+                component: NouvelleCmdCltFrsComponent
+              },
+              {
+                path: 'categories',
+                component: PageCategoriesComponent
+              },
+              {
+                path: 'nouvellecategorie',
+                component: NouvelleCategoryComponent
+              },
+            ]
             }
   ];
 

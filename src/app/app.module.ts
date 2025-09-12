@@ -20,6 +20,19 @@ import { PageClientComponent } from './pages/client/page-client/page-client.comp
 import { PageFournisseurComponent } from './pages/fournisseur/page-fournisseur/page-fournisseur.component';
 import { ButtonActionComponent } from './composants/button-action/button-action/button-action.component';
 import { NouveauCltFrsComponent } from './composants/nouveau-clt-frs/nouveau-clt-frs.component';
+import {DetailMvtStkComponent} from "./composants/detail-mvt-stk/detail-mvt-stk.component";
+import {PageProfilComponent} from "./pages/profil/page-profil/page-profil.component";
+//import {CategorieComponent} from "./pages/categories/categorie/categorie.component";
+import {NouvelleCategoryComponent} from "./pages/categories/nouvelle-category/nouvelle-category.component";
+import {NouvelUtilisateurComponent} from "./pages/utilisateur/nouvel-utilisateur/nouvel-utilisateur.component";
+import {PageUtilisateurComponent} from "./pages/utilisateur/page-utilisateur/page-utilisateur.component";
+import {DetailUtilisateurComponent} from "./composants/detail-utilisateur/detail-utilisateur.component";
+import {DetailCmdComponent} from "./composants/detail-cmd/detail-cmd.component";
+import {DetailCmdCltFrsComponent} from "./composants/detail-cmd-clt-frs/detail-cmd-clt-frs.component";
+import {NouvelleCmdCltFrsComponent} from "./composants/nouvelle-cmd-clt-frs/nouvelle-cmd-clt-frs.component";
+import {PageCmdCltFrsComponent} from "./pages/page-cmd-clt-frs/page-cmd-clt-frs.component";
+import {ChangerMotDePasseComponent} from "./pages/profil/changer-mot-de-passe/changer-mot-de-passe.component";
+import { PageCategoriesComponent } from './pages/categories/page-categories/page-categories.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +53,20 @@ import { NouveauCltFrsComponent } from './composants/nouveau-clt-frs/nouveau-clt
    PageClientComponent,
    PageFournisseurComponent,
    ButtonActionComponent,
-   NouveauCltFrsComponent
+   NouveauCltFrsComponent,
+    DetailMvtStkComponent,
+    PageProfilComponent,
+   // CategorieComponent,
+    NouvelleCategoryComponent,
+    NouvelUtilisateurComponent,
+    PageUtilisateurComponent,
+    DetailUtilisateurComponent,
+    DetailCmdComponent,
+    DetailCmdCltFrsComponent,
+    NouvelleCmdCltFrsComponent,
+    PageCmdCltFrsComponent,
+    ChangerMotDePasseComponent,
+    PageCategoriesComponent
   ],
   imports: [
     BrowserModule,
