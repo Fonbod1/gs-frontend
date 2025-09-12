@@ -15,6 +15,9 @@ import {PageCmdCltFrsComponent} from "./pages/page-cmd-clt-frs/page-cmd-clt-frs.
 import {NouvelleCmdCltFrsComponent} from "./composants/nouvelle-cmd-clt-frs/nouvelle-cmd-clt-frs.component";
 import {PageCategoriesComponent} from "./pages/categories/page-categories/page-categories.component";
 import {NouvelleCategoryComponent} from "./pages/categories/nouvelle-category/nouvelle-category.component";
+import {PageUtilisateurComponent} from "./pages/utilisateur/page-utilisateur/page-utilisateur.component";
+import {NouvelUtilisateurComponent} from "./pages/utilisateur/nouvel-utilisateur/nouvel-utilisateur.component";
+import {ChangerMotDePasseComponent} from "./pages/profil/changer-mot-de-passe/changer-mot-de-passe.component";
 
 const routes: Routes = [
        { path: 'login', component: PageLoginComponent },
@@ -80,6 +83,22 @@ const routes: Routes = [
               {
                 path: 'nouvellecategorie',
                 component: NouvelleCategoryComponent
+              },
+              {
+                path: 'utilisateurs',
+                component: PageUtilisateurComponent
+              },
+              {
+                path: 'nouvelutilisateur',
+                component: NouvelUtilisateurComponent
+              },
+              {
+                path: 'profile',
+                component: PageProfilComponent
+              },
+              {
+                path: 'changermotdepasse',
+                component: ChangerMotDePasseComponent
               },
             ]
             }
