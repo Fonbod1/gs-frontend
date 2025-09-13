@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Routes} from "@angular/router";
 
 @Component({
   selector: 'app-nouveau-clt-frs',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NouveauCltFrsComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+
+  ) { }
 
   ngOnInit(): void {
   }
