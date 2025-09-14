@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Routes} from "@angular/router";
+import {ActivatedRoute, Router, Routes} from "@angular/router";
 
 @Component({
   selector: 'app-nouveau-clt-frs',
@@ -9,6 +9,7 @@ import {ActivatedRoute, Routes} from "@angular/router";
 export class NouveauCltFrsComponent implements OnInit {
     origin = "";
   constructor(
+    private router: Router,
     private activatedRoute: ActivatedRoute
   ) { }
 
@@ -18,4 +19,21 @@ export class NouveauCltFrsComponent implements OnInit {
     })
   }
 
+  cancelClick() {
+    //this.cancelClickEvent.emit();
+    if (this.origin === 'client'){
+      this.router.navigate(['clients']);
+
+    }else if (this.origin === 'fournisseur'){
+
+      this.router.navigate(['fournisseurs']);
+
+    }
+
+  }
+
+  saveClick() {
+    //this.saveClickevent.emit();
+
+  }
 }
