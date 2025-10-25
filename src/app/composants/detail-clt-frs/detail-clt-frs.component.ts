@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ClientDto} from "../../../gs-api/src/models/client-dto";
+import {Router} from "@angular/router";
+import {FournisseurDto} from "../../../gs-api/src/models/fournisseur-dto";
+import {CltfrsService} from "../../services/cltfrs/cltfrs.service";
+//import {constructor} from "jasmine";
 
 @Component({
   selector: 'app-detail-clt-frs',
@@ -6,10 +11,50 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./detail-clt-frs.component.scss']
 })
 export class DetailCltFrsComponent implements OnInit {
+ // @Input()
+  @Input() origin!: string;
 
-  constructor() { }
+  @Input()
+  clientFournisseur: any = {};
+
+  @Output()
+  suppressionResult = new EventEmitter();
+
+  constructor(
+    private router: Router,
+    private cltFrsService: CltfrsService
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  modifierClientFournisseur(): void {
+    if (this.origin === 'client'){
+      this.router.navigate(['nouveauclient', this.clientFournisseur.id]);
+
+    }else if (this.origin === 'fournisseur'){
+
+      this.router.navigate(['nouveaufournisseur', this.clientFournisseur.id]);
+
+    }
+
+  }
+  confirmerEtSupprimer(): void {
+    if (this.origin === 'client') {
+      this.cltFrsService.deleteClient(this.clientFournisseur.id)
+        .subscribe(res => {
+          this.suppressionResult.emit('success');
+        }, error => {
+          this.suppressionResult.emit(error.error.error);
+        });
+    } else if (this.origin === 'fournisseur') {
+      this.cltFrsService.deleteFournisseur(this.clientFournisseur.id)  // <- call deleteFournisseur here
+        .subscribe(res => {
+          this.suppressionResult.emit('success');
+        }, error => {
+          this.suppressionResult.emit(error.error.error);
+        });
+    }
   }
 
 }

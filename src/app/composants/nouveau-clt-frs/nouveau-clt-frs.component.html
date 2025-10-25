@@ -9,42 +9,55 @@
     <div class="col-md-12 mb-3">
       <h2><i class="fa-solid fa-circle-info blue-color"></i>&nbsp; Information du {{origin}}</h2>
     </div>
-
+       <div class="alert alert-danger" *ngIf="errorMsg.length > 0">
+          <div *ngFor="let msg of errorMsg ">
+            {{ msg }}
+          </div>
+       </div>
     <!-- ✅ Single form with two columns -->
     <form>
       <div class="row">
         <!-- LEFT SIDE -->
         <div class="col-md-6">
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Nom">
+            <input type="text" class="form-control" placeholder="Nom"
+            name="nom" [(ngModel)]="clientFournisseur.nom">
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Prénom">
+            <input type="text" class="form-control" placeholder="Prénom"
+            name="prenom" [(ngModel)]="clientFournisseur.prenom" >
           </div>
           <div class="form-group mb-3">
-            <input type="email" class="form-control" placeholder="Email">
+            <input type="email" class="form-control" placeholder="Email"
+                   name="email" [(ngModel)]="clientFournisseur.mail">
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Téléphone">
+            <input type="text" class="form-control" placeholder="Téléphone"
+                   name="telephone" [(ngModel)]="clientFournisseur.numTel">
           </div>
         </div>
 
         <!-- RIGHT SIDE -->
         <div class="col-md-6">
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Adresse 1">
+            <input type="text" class="form-control" placeholder="Adresse 1"
+            name="adresse1" [(ngModel)]="adresseDto.adresse1">
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Adresse 2">
+            <input type="text" class="form-control" placeholder="Adresse 2"
+                   name="adresse2" [(ngModel)]="adresseDto.adresse2">
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Ville">
+            <input type="text" class="form-control" placeholder="Ville"
+                   name="ville" [(ngModel)]="adresseDto.ville" >
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Code postal">
+            <input type="text" class="form-control" placeholder="Code postal"
+                   name="codepostal" [(ngModel)]="adresseDto.codePostal" >
           </div>
           <div class="form-group mb-3">
-            <input type="text" class="form-control" placeholder="Pays">
+            <input type="text" class="form-control" placeholder="Pays"
+                   name="pays" [(ngModel)]="adresseDto.pays">
           </div>
         </div>
       </div>
@@ -54,7 +67,7 @@
         <button type="button" class="btn btn-danger mr-3" (click)="cancelClick()">
           <i class="fa-regular fa-ban"></i>&nbsp; Annuler
         </button>
-        <button type="submit" class="btn btn-primary" (click)="saveClick()">
+        <button type="submit" class="btn btn-primary" (click)="enregistrer()">
           <i class="fas fa-save"></i>&nbsp; Enregistrer
         </button>
       </div>

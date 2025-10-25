@@ -33,6 +33,10 @@ import {NouvelleCmdCltFrsComponent} from "./composants/nouvelle-cmd-clt-frs/nouv
 import {PageCmdCltFrsComponent} from "./pages/page-cmd-clt-frs/page-cmd-clt-frs.component";
 import {ChangerMotDePasseComponent} from "./pages/profil/changer-mot-de-passe/changer-mot-de-passe.component";
 import { PageCategoriesComponent } from './pages/categories/page-categories/page-categories.component';
+import {FormsModule} from "@angular/forms";
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HttpInterceptorService} from "./services/interceptor/http-interceptor.service";
+//import {InterceptorService} from "./services/interceptor/interceptor.service";
 
 @NgModule({
   declarations: [
@@ -70,9 +74,18 @@ import { PageCategoriesComponent } from './pages/categories/page-categories/page
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorService,
+      multi: true
+  }
+  ],
+  bootstrap: [AppComponent],
+
 })
 export class AppModule { }

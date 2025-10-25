@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {CategoryDto} from "../../../../gs-api/src/models/category-dto";
+import {CategoryControllerService} from "../../../../gs-api/src/services/category-controller.service";
+import {CategoryService} from "../../../services/category/category.service";
+import {subscribeOn} from "rxjs";
 
 @Component({
   selector: 'app-nouvelle-category',
@@ -7,15 +11,40 @@ import {Router} from "@angular/router";
   styleUrls: ['./nouvelle-category.component.scss']
 })
 export class NouvelleCategoryComponent implements OnInit {
+  categoryDto: CategoryDto = {};
+  errorMsg: Array<string> = [];
 
   constructor(
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private categoryService: CategoryService
   ) { }
 
   ngOnInit(): void {
+    const idCategory = this.activatedRoute.snapshot.params['idCategory']
+
+    if (idCategory){
+          this.categoryService.findById(idCategory)
+          .subscribe(cat =>{
+            this.categoryDto = cat;
+
+          });
+        }
+
   }
 
   cancel() {
     this.router.navigate(['categories']);
+  }
+
+  enregistrerCategory(): void {
+    this.categoryService.enregistrerCategory(this.categoryDto)
+      .subscribe(res =>{
+        this.router.navigate(['categories']);
+
+      }, error => {
+        this.errorMsg = error.error.errors;
+      });
+
   }
 }

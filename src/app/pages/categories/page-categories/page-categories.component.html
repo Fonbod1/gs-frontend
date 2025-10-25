@@ -8,24 +8,67 @@
 
       </app-button-action>
     </div>
-
   </div>
   <div class=" col m-3">
-    <div class="row custom-border mb-3 p-3">
+    <div class="row col-md-12 alert-danger" *ngIf="errorMsgs">
+      {{errorMsgs}}
+    </div>
+    <div class="row col-md-12 custom-border mb-3 p-3" *ngFor="let cat of listcategories">
       <div class="col-md-3 custom-border-right">
-        Code categorie
+        {{cat.code}}
+      </div>
+      <div class="col-md-6 custom-border-right">
+        {{cat.designation}}
       </div>
       <div class="col-md-3 ">
-        Description categorie
+        <div class="row">
+          <div class="col-md-4">
+            <button type="button" class="btn  btn-link text-danger" (click)="modifierCategory(cat.id!)">
+              <i class="fa-solid fa-pencil"></i>&nbsp; Modifier
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button type="button" class="btn  btn-link text-danger" data-toggle="modal" data-target="#modalDeleteCat" (click)="selectCatPourSuprimer(cat.id!)">
+              <i class="fa-solid fa-trash-can"></i>&nbsp;Supprime
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button type="button" class="btn  btn-link ">
+              <i class="fa-solid fa-list-ul"></i>&nbsp; Detail
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="row mb-3">
+  <div class="row mb-3" *ngIf="listcategories.length > 0">
     <div class="col-md-12  text-center">
       <app-pagination></app-pagination>
     </div>
   </div>
+</div>
 
+<!-- Modal -->
+<div class="modal fade" id="modalDeleteCat" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this category
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="annulerSuppressionCat()">
+          <i class="fas fa-ban"></i>&nbsp;Annuler</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="confirmerEtSupprimerCat()">
+          <i class="fa-solid fa-trash-can"></i>Supprimmer</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 

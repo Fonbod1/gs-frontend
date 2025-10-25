@@ -8,12 +8,11 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "ng e2e",
-    "start:local": "npm run gs-api && ng serve -- --proxyConfig=proxy.conf.json",
+    "start:local": "npm run gs-api && ng serve --proxy-config proxy.conf.json",
     "gs-api": "npm run gs-api:create-dist && npm run gs-api:copy && npm run gs-api:swagger-gen",
-    "gs-api:create-dist": "mkdir tools\\swagger\\dist && mkdir tools\\swagger\\src",
-    "gs-api:copy": "copy C:\\Users\\pkf\\Desktop\\Personal-doc\\inventory-management-system\\gs-backend\\managing-stock-backend-project\\target\\managing-stock-0.0.1-SNAPSHOT.jar tools\\swagger\\dist && copy C:\\Users\\pkf\\Desktop\\Personal-doc\\inventory-management-system\\gs-backend\\managing-stock-backend-project\\target\\swagger.json tools\\swagger\\src",
-    "gs-api:swagger-gen": "npx swagger-typescript-api generate -p ./tools/swagger/src/swagger.json -o ./src/gs-api -n api.ts"
-
+    "gs-api:create-dist": "mkdir tools\\swagger\\dist 2> NUL && mkdir tools\\swagger\\src 2> NUL",
+    "gs-api:copy": "copy /Y \"C:\\Users\\pkf\\Desktop\\Personal-doc\\gs-backend\\managing-stock-backend-project\\target\\managing-stock-0.0.1-SNAPSHOT.jar\" tools\\swagger\\dist\\ && copy /Y \"C:\\Users\\pkf\\Desktop\\Personal-doc\\gs-backend\\managing-stock-backend-project\\target\\swagger.json\" tools\\swagger\\src\\",
+    "gs-api:swagger-gen": "node_modules\\.bin\\ng-swagger-gen -i tools\\swagger\\src\\swagger.json -o src\\gs-api\\src"
   },
   "private": true,
   "dependencies": {
@@ -34,9 +33,11 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^13.1.0",
     "@angular-devkit/build-angular": "~13.3.11",
     "@angular/cli": "~13.3.11",
     "@angular/compiler-cli": "~13.3.0",
+    "@openapitools/openapi-generator-cli": "^2.23.4",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "jasmine-core": "~4.0.0",
@@ -47,7 +48,9 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "ng-packagr": "^13.3.1",
     "ng-swagger-gen": "^1.8.1",
+    "process": "^0.11.10",
     "swagger-typescript-api": "^13.2.9",
+    "tty-browserify": "^0.0.1",
     "typescript": "~4.6.2"
   }
 }
