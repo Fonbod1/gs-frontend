@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LigneCommandeClient} from "../../../gs-api/src/models/ligne-commande-client";
+import {LigneCommandeClientDto} from "../../../gs-api/src/models/ligne-commande-client-dto";
 
 @Component({
   selector: 'app-detail-cmd',
@@ -8,9 +9,7 @@ import {LigneCommandeClient} from "../../../gs-api/src/models/ligne-commande-cli
 })
 export class DetailCmdComponent implements OnInit {
 
-  @Input()
-  lignComande: LigneCommandeClient = {};
-
+  @Input() ligneCommande!: LigneCommandeClientDto;
   constructor() { }
 
   ngOnInit(): void {
