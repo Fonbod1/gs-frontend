@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientDto } from '../../../gs-api/src/models/client-dto';
+
 import { ArticleDto } from '../../../gs-api/src/models/article-dto';
-import { LigneCommandeClientDto } from '../../../gs-api/src/models/ligne-commande-client-dto';
+
 import { CltfrsService } from '../../services/cltfrs/cltfrs.service';
 import { ArticleService } from '../../services/article/article.service';
+import {CommandeClientControllerService} from "../../../gs-api/src/services/commande-client-controller.service";
+import {ClientDto} from "../../../gs-api/src/models/client-dto";
+import {LigneCommandeClientDto} from "../../../gs-api/src/models/ligne-commande-client-dto";
+import {CommandeClientDtoReq} from "../../../gs-api/src/models/commande-client-dto-req";
 
 @Component({
   selector: 'app-nouvelle-cmd-clt-frs',
@@ -33,7 +37,8 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private cltFrsService: CltfrsService,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private commandeClientService: CommandeClientControllerService
   ) {}
 
   ngOnInit(): void {
@@ -100,6 +105,14 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
       art.designation?.toLowerCase().startsWith(search)
     );
   }
+  filtrerArticle(): void {
+    if (this.codeArticle.length === 0) {
+      this.findAllArticles();
+    }
+    this.listArticle = this.listArticle
+      .filter(art => art.codeArticle?.includes(this.codeArticle) || art.designation?.includes(this.codeArticle));
+  }
+
 
   ajouterLigneCommande(): void {
     if (!this.searchedArticle?.id || !this.quantite) {
@@ -128,11 +141,13 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
   }
 
   private updateTotalCommande(): void {
-    this.totalCommande = this.lignesCommande.reduce((total, ligne) => {
+    this.checkLigneCommande()
+    this.calculerTotalCommande()
+   /* this.totalCommande = this.lignesCommande.reduce((total, ligne) => {
       const prix = ligne.prixUnitaire || 0;
       const quantite = ligne.quantite || 0;
       return total + prix * quantite;
-    }, 0);
+    }, 0);*/
   }
 
   private resetArticleSelection(): void {
@@ -143,6 +158,44 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
     this.articleErrorMsg = '';
     this.findAllArticles()
   }
+  calculerTotalCommande(): void {
+    this.totalCommande = 0;
+    this.lignesCommande.forEach(ligne => {
+      if (ligne.prixUnitaire && ligne.quantite) {
+        this.totalCommande += +ligne.prixUnitaire * +ligne.quantite;
+      }
+    });
+  }
+
+
+  private checkLigneCommande(): void {
+    if (!this.searchedArticle) {
+      this.articleErrorMsg = 'Veuillez sélectionner un article';
+      return; // exit if no article is selected
+    }
+
+    const ligneCmdAlreadyExists = this.lignesCommande.find(
+      lig => lig.article?.codeArticle === this.searchedArticle?.codeArticle
+    );
+
+    if (ligneCmdAlreadyExists) {
+      this.lignesCommande.forEach(lig => {
+        if (lig && lig.article?.codeArticle === this.searchedArticle?.codeArticle) {
+          lig.quantite = (lig.quantite || 0) + +this.quantite;
+        }
+      });
+    } else {
+      const ligneCmd: LigneCommandeClientDto = {
+        article: this.searchedArticle,              // safe: guaranteed non-null
+        prixUnitaire: this.searchedArticle.prixUnitaireTtc || 0, // fallback if undefined
+        quantite: +this.quantite
+      };
+      this.lignesCommande.push(ligneCmd);
+    }
+  }
+
+
+
 
   cancelClick(): void {
     const route = this.origin === 'client' ? '/commandes-clients' : '/commandes-fournisseurs';
@@ -161,6 +214,52 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
   }
 
   enregistrerCommande(): void {
+    const commande = this.preparerCommande()
+    if (!this.selectedClientFournisseur || this.lignesCommande.length === 0) {
+      this.errorMsg = ['Veuillez sélectionner un client/fournisseur et ajouter au moins un article.'];
+      return;
+    }
 
+    const commandeClient: CommandeClientDtoReq = {
+      client: this.selectedClientFournisseur,
+      code: 'CMD-' + new Date().getTime(),
+      etatCommande: 'EN_PREPARATION',
+      idEntreprise: 1,
+      dateCommande: new Date().toISOString(),
+      ligneCommandeClients: this.lignesCommande
+    };
+
+    this.commandeClientService.saveUsingPOST3(commandeClient).subscribe({
+      next: (cmd) => {
+        console.log('Commande saved:', cmd);
+        this.router.navigate(['commandesclient']);
+      },
+      error: (err) => {
+        console.error('Save error:', err);
+        this.errorMsg = err?.error?.errors || ['Une erreur est survenue lors de l\'enregistrement.'];
+      }
+    });
   }
+
+  private preparerCommande(): any {
+    if (this.origin === 'client') {
+      return  {
+        client: this.selectedClientFournisseur,
+        code: this.codeCommande,
+        dateCommande: new Date().getTime(),
+        etatCommande: 'EN_PREPARATION',
+        ligneCommandeClients: this.lignesCommande
+      };
+    } else if (this.origin === 'fournisseur') {
+      return  {
+        fournisseur: this.selectedClientFournisseur,
+        code: this.codeCommande,
+        dateCommande: new Date().getTime(),
+        etatCommande: 'EN_PREPARATION',
+        ligneCommandeFournisseurs: this.lignesCommande
+      };
+    }
+  }
+
+
 }

@@ -64,7 +64,7 @@
       <div class="form-row col-md-12">
         <!-- Code Article -->
         <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Code article" [(ngModel)]="codeArticle" (input)="searchArticleEvent()">
+          <input type="text" class="form-control" placeholder="Code article" [(ngModel)]="codeArticle" (input)="filtrerArticle()">
           <div *ngIf="codeArticle.length && !articleNotYetSelected" class="autocomplete shadow p-3 mb-5 bg-white rounded">
             <p class="p-1" *ngFor="let article of listArticle" (click)="selectArticleClick(article)">
               {{ article.codeArticle }} &nbsp; {{ article.designation }}

@@ -111,7 +111,7 @@ class CommandeClientControllerService extends __BaseService {
    *
    * - `idLigneCommande`: idLigneCommande
    *
-   * - `idCommandeClient`: idCommandeClient
+   * - `idCommande`: idCommande
    *
    * @return OK
    */
@@ -143,7 +143,7 @@ class CommandeClientControllerService extends __BaseService {
    *
    * - `idLigneCommande`: idLigneCommande
    *
-   * - `idCommandeClient`: idCommandeClient
+   * - `idCommande`: idCommande
    *
    * @return OK
    */
@@ -507,9 +507,9 @@ module CommandeClientControllerService {
     idLigneCommande: number;
 
     /**
-     * idCommandeClient
+     * idCommande
      */
-    idCommandeClient: number;
+    idCommande: number;
   }
 
   /**
