@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import {CommandeClientControllerService} from "../../../gs-api/src/services/commande-client-controller.service";
-import {
-  CommandeFournisseurControllerService
-} from "../../../gs-api/src/services/commande-fournisseur-controller.service";
-import {UserService} from "../user/user.service";
-import {CommandeClientDtoReq} from "../../../gs-api/src/models/commande-client-dto-req";
-import {Observable, of} from "rxjs";
-import {CommandeFournisseurDtoRes} from "../../../gs-api/src/models/commande-fournisseur-dto-res";
-import {LigneCommandeClientDto} from "../../../gs-api/src/models/ligne-commande-client-dto";
-import {LigneCommandeFournisseur} from "../../../gs-api/src/models/ligne-commande-fournisseur";
+import { Observable, of } from 'rxjs';
+import { CommandeClientControllerService } from '../../../gs-api/src/services/commande-client-controller.service';
+import { CommandeFournisseurControllerService } from '../../../gs-api/src/services/commande-fournisseur-controller.service';
+import { UserService } from '../user/user.service';
+import { CommandeClientDtoReq } from '../../../gs-api/src/models/commande-client-dto-req';
+import { CommandeFournisseurDtoRes } from '../../../gs-api/src/models/commande-fournisseur-dto-res';
+import { LigneCommandeClientDto } from '../../../gs-api/src/models/ligne-commande-client-dto';
+import { LigneCommandeFournisseur } from '../../../gs-api/src/models/ligne-commande-fournisseur';
 
 @Injectable({
   providedIn: 'root'
@@ -16,50 +14,45 @@ import {LigneCommandeFournisseur} from "../../../gs-api/src/models/ligne-command
 export class CmdcltfrsService {
 
   constructor(
-    private commandeClientServices: CommandeClientControllerService,
+    private commandeClientService: CommandeClientControllerService,
     private commandeFournisseurService: CommandeFournisseurControllerService,
-    private userService: UserService,
+    private userService: UserService
+  ) {}
 
-    //private ligneCmdService: Li
-  ) {
-  }
-
+  // Enregistrer commande client
   enregistrerCommandeClient(commandeClient: CommandeClientDtoReq): Observable<CommandeClientDtoReq> {
-    // @ts-ignore
-    commandeClient.idEntreprise = this.userService.getConnectedUser().entreprise.id;
-    return this.commandeClientServices.saveUsingPOST3(commandeClient);
+    commandeClient.idEntreprise = this.userService.getConnectedUser()?.entreprise?.id ?? 0;
+    return this.commandeClientService.saveUsingPOST3(commandeClient);
   }
 
+// Enregistrer commande fournisseur
   enregistrerCommandeFournisseur(commandeFournisseur: CommandeFournisseurDtoRes): Observable<CommandeFournisseurDtoRes> {
-    // @ts-ignore
-    commandeFournisseur.idEntreprise = this.userService.getConnectedUser().entreprise.id;
+    commandeFournisseur.idEntreprise = this.userService.getConnectedUser()?.entreprise?.id ?? 0;
     return this.commandeFournisseurService.saveUsingPOST4(commandeFournisseur);
-
   }
-   findAllCommandesClient(): Observable<CommandeClientDtoReq[]> {
-    return this.commandeClientServices.findAllUsingGET3();
-   }
+  // Toutes les commandes clients
+  findAllCommandesClient(): Observable<CommandeClientDtoReq[]> {
+    return this.commandeClientService.findAllUsingGET3();
+  }
 
+  //  Toutes les commandes fournisseurs
   findAllCommandesFournisseur(): Observable<CommandeFournisseurDtoRes[]> {
     return this.commandeFournisseurService.findAllUsingGET4();
   }
 
-  findAllLignCommandClient(idCmd?: number): Observable<LigneCommandeClientDto[]>{
-    if (idCmd){
-      return this.commandeClientServices.findAllLignesCommandesClientByCommandeClientIdUsingGET(idCmd);
-
+  //  Toutes les lignes d'une commande client
+  findAllLigneCommandesClient(idCmd?: number): Observable<LigneCommandeClientDto[]> {
+    if (idCmd) {
+      return this.commandeClientService.findAllLignesCommandesClientByCommandeClientIdUsingGET(idCmd);
     }
-    return of();
-
+    return of([]);
   }
-  findAllLignCommandFournisseur(idCmd?: number): Observable<LigneCommandeFournisseur[]>{
-    if (idCmd){
+
+  //  Toutes les lignes d'une commande fournisseur
+  findAllLigneCommandesFournisseur(idCmd?: number): Observable<LigneCommandeFournisseur[]> {
+    if (idCmd) {
       return this.commandeFournisseurService.findAllLignesCommandesFournisseurByCommandeFournisseurIdUsingGET(idCmd);
-
     }
-    return of();
-
+    return of([]);
   }
-
-
 }

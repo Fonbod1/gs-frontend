@@ -6,10 +6,11 @@ import { ClientDto } from '../../../gs-api/src/models/client-dto';
 import { FournisseurDto } from '../../../gs-api/src/models/fournisseur-dto';
 import { LigneCommandeClientDto } from '../../../gs-api/src/models/ligne-commande-client-dto';
 import { CommandeClientDtoReq } from '../../../gs-api/src/models/commande-client-dto-req';
+import { CommandeFournisseurDtoRes } from '../../../gs-api/src/models/commande-fournisseur-dto-res';
 
 import { CltfrsService } from '../../services/cltfrs/cltfrs.service';
 import { ArticleService } from '../../services/article/article.service';
-import { CommandeClientControllerService } from '../../../gs-api/src/services/commande-client-controller.service';
+import { CmdcltfrsService } from '../../services/cmdcltfrs/cmdcltfrs.service';
 
 @Component({
   selector: 'app-nouvelle-cmd-clt-frs',
@@ -19,158 +20,98 @@ import { CommandeClientControllerService } from '../../../gs-api/src/services/co
 export class NouvelleCmdCltFrsComponent implements OnInit {
 
   origin = '';
-  selectedClientFournisseur: ClientDto | FournisseurDto | any = {};
-  listClientsFournisseurs: Array<ClientDto | FournisseurDto | any> = [];
+  selectedClientFournisseur: any = {};
+  listClientsFournisseurs: Array<any> = [];
 
-  searchedArticle: ArticleDto | null = null;
+  searchedArticle: ArticleDto = {};
   listArticle: Array<ArticleDto> = [];
   codeArticle = '';
   quantite = '';
   codeCommande = '';
 
-  lignesCommande: LigneCommandeClientDto[] = [];
+  lignesCommande: Array<any> = [];
   totalCommande = 0;
   articleNotYetSelected = false;
-  articleErrorMsg = '';
   errorMsg: Array<string> = [];
 
   constructor(
-    private router: Router,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private cltFrsService: CltfrsService,
     private articleService: ArticleService,
-    private commandeClientService: CommandeClientControllerService
+    private cmdCltFrsService: CmdcltfrsService
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(data => {
       this.origin = data['origin'];
     });
-    this.loadClientsOrFournisseurs();
-    this.loadArticles();
+
+    this.findAllClientsFournisseurs();
+    this.findAllArticles();
+
+    // call correct service method and type the result
+    this.articleService.findAllArticle()
+      .subscribe((articles: ArticleDto[]) => {
+        this.listArticle = articles;
+      });
   }
 
-  private loadClientsOrFournisseurs(): void {
+
+  findAllClientsFournisseurs(): void {
     if (this.origin === 'client') {
-      this.cltFrsService.findAllClients().subscribe((clients: ClientDto[]) => {
-        this.listClientsFournisseurs = clients;
-      }, error => {
-        console.error('Erreur lors du chargement des clients:', error);
-      });
+      this.cltFrsService.findAllClients()
+        .subscribe(clients => this.listClientsFournisseurs = clients);
     } else if (this.origin === 'fournisseur') {
-      this.cltFrsService.findAllFournisseurs().subscribe((fournisseurs: FournisseurDto[]) => {
-        this.listClientsFournisseurs = fournisseurs;
-      }, error => {
-        console.error('Erreur lors du chargement des fournisseurs:', error);
-      });
+      this.cltFrsService.findAllFournisseurs()
+        .subscribe(fournisseurs => this.listClientsFournisseurs = fournisseurs);
     }
-  }
-
-  private loadArticles(): void {
-    this.articleService.findAllArticle().subscribe(articles => {
-      this.listArticle = articles;
-    });
   }
 
   findAllArticles(): void {
-    this.articleService.findAllArticle().subscribe(articles => {
-      this.listArticle = articles;
-    });
-  }
-
-  findArticleByCode(codeArticle: string): void {
-    this.articleErrorMsg = '';
-
-    if (!codeArticle) {
-      this.articleErrorMsg = 'Veuillez entrer un code article';
-      return;
-    }
-
-    this.articleService.findArticleByCode(codeArticle).subscribe({
-      next: (article) => {
-        this.searchedArticle = article;
-        this.articleErrorMsg = '';
-      },
-      error: (err) => {
-        this.articleErrorMsg = err.error?.errors || 'Article introuvable';
-      }
-    });
-  }
-
-  searchArticleEvent(): void {
-    if (this.codeArticle.length === 0) {
-      this.articleService.findAllArticle().subscribe(articles => {
-        this.listArticle = articles;
-      });
-      return;
-    }
-
-    const search = this.codeArticle.toLowerCase();
-    this.listArticle = this.listArticle.filter(art =>
-      art.codeArticle?.toLowerCase().startsWith(search) ||
-      art.designation?.toLowerCase().startsWith(search)
-    );
+    this.articleService.findAllArticle()
+      .subscribe(articles => this.listArticle = articles);
   }
 
   filtrerArticle(): void {
     if (this.codeArticle.length === 0) {
       this.findAllArticles();
     }
-    this.listArticle = this.listArticle.filter(
-      art => art.codeArticle?.includes(this.codeArticle) || art.designation?.includes(this.codeArticle)
-    );
+    this.listArticle = this.listArticle
+      .filter(art => art.codeArticle?.includes(this.codeArticle) || art.designation?.includes(this.codeArticle));
   }
 
   ajouterLigneCommande(): void {
-    if (!this.searchedArticle?.id || !this.quantite) {
-      this.articleErrorMsg = 'Veuillez sélectionner un article et saisir la quantité';
-      return;
-    }
-
-    const ligneCmdAlreadyExist = this.lignesCommande.find(
-      lig => lig.article?.codeArticle === this.searchedArticle?.codeArticle
+    const ligneCmdAlreadyExists = this.lignesCommande.find(
+      lig => lig.article?.codeArticle === this.searchedArticle.codeArticle
     );
 
-    if (ligneCmdAlreadyExist) {
-      ligneCmdAlreadyExist.quantite = (ligneCmdAlreadyExist.quantite || 0) + +this.quantite;
+    if (ligneCmdAlreadyExists) {
+      ligneCmdAlreadyExists.quantite += +this.quantite;
     } else {
-      const ligne: LigneCommandeClientDto = {
-        article: this.searchedArticle!,
-        prixUnitaire: this.searchedArticle!.prixUnitaireTtc || 0,
+      this.lignesCommande.push({
+        article: this.searchedArticle,
+        prixUnitaire: this.searchedArticle.prixUnitaireTtc,
         quantite: +this.quantite
-      };
-      this.lignesCommande.push(ligne);
+      });
     }
 
-    this.updateTotalCommande();
+    this.calculerTotalCommande();
     this.resetArticleSelection();
   }
 
-  private updateTotalCommande(): void {
-    this.calculerTotalCommande();
-  }
-
   private resetArticleSelection(): void {
-    this.searchedArticle = null;
+    this.searchedArticle = {};
     this.quantite = '';
     this.codeArticle = '';
     this.articleNotYetSelected = false;
-    this.articleErrorMsg = '';
     this.findAllArticles();
   }
 
   calculerTotalCommande(): void {
-    this.totalCommande = 0;
-    this.lignesCommande.forEach(ligne => {
-      if (ligne.prixUnitaire && ligne.quantite) {
-        this.totalCommande += +ligne.prixUnitaire * +ligne.quantite;
-      }
-    });
-  }
-
-  cancelClick(): void {
-    const route = this.origin === 'client' ? '/commandes-clients' : '/commandes-fournisseurs';
-    this.router.navigate([route]);
+    this.totalCommande = this.lignesCommande.reduce((total, ligne) => {
+      return total + ((ligne.prixUnitaire || 0) * (ligne.quantite || 0));
+    }, 0);
   }
 
   selectArticleClick(article: ArticleDto): void {
@@ -180,31 +121,54 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
   }
 
   enregistrerCommande(): void {
-    if (!this.selectedClientFournisseur || this.lignesCommande.length === 0) {
-      this.errorMsg = ['Veuillez sélectionner un client/fournisseur et ajouter au moins un article.'];
-      return;
+    const commande = this.preparerCommande();
+
+    if (this.origin === 'client') {
+      this.cmdCltFrsService.enregistrerCommandeClient(commande as CommandeClientDtoReq)
+        .subscribe(
+          () => this.router.navigate(['commandesclient']),
+          error => this.errorMsg = error.error?.errors || ['Une erreur est survenue.']
+        );
+    } else if (this.origin === 'fournisseur') {
+      this.cmdCltFrsService.enregistrerCommandeFournisseur(commande as CommandeFournisseurDtoRes)
+        .subscribe(
+          () => this.router.navigate(['commandesfournisseur']),
+          error => this.errorMsg = error.error?.errors || ['Une erreur est survenue.']
+        );
     }
+  }
 
-    // Only handle client orders here
-    const commandeClient: CommandeClientDtoReq = {
-      client: this.origin === 'client' ? this.selectedClientFournisseur : undefined,
-      code: 'CMD-' + new Date().getTime(),
-      etatCommande: 'EN_PREPARATION',
-      idEntreprise: 1,
-      dateCommande: new Date().toISOString(),
-      ligneCommandeClients: this.origin === 'client' ? this.lignesCommande : undefined
-    };
+  private preparerCommande(): any {
+    if (this.origin === 'client') {
+      return {
+        client: { id: this.selectedClientFournisseur.id },
+        code: this.codeCommande || 'CMD-' + new Date().getTime(),
+        dateCommande: new Date().toISOString(),
+        etatCommande: 'EN_PREPARATION',
+        ligneCommandeClients: this.lignesCommande.map(l => ({
+          article: { id: l.article.id },
+          quantite: l.quantite,
+          prixUnitaire: l.prixUnitaire
+        }))
+      };
+    } else if (this.origin === 'fournisseur') {
+      return {
+        fournisseur: { id: this.selectedClientFournisseur.id },
+        code: this.codeCommande || 'CMD-' + new Date().getTime(),
+        dateCommande: new Date().toISOString(),
+        etatCommande: 'EN_PREPARATION',
+        ligneCommandeFournisseurs: this.lignesCommande.map(l => ({
+          article: { id: l.article.id },
+          quantite: l.quantite,
+          prixUnitaire: l.prixUnitaire
+        }))
+      };
+    }
+  }
 
-    this.commandeClientService.saveUsingPOST3(commandeClient).subscribe({
-      next: (cmd) => {
-        console.log('Commande saved:', cmd);
-        this.router.navigate(['commandesclient']);
-      },
-      error: (err) => {
-        console.error('Save error:', err);
-        this.errorMsg = err?.error?.errors || ['Une erreur est survenue lors de l\'enregistrement.'];
-      }
-    });
+  cancelClick(): void {
+    const route = this.origin === 'client' ? '/commandes-clients' : '/commandes-fournisseurs';
+    this.router.navigate([route]);
   }
 
 }

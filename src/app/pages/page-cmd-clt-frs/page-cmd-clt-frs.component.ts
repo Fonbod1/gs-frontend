@@ -1,11 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommandeClientDtoReq } from "../../../gs-api/src/models/commande-client-dto-req";
-import { CommandeFournisseurDtoRes } from "../../../gs-api/src/models/commande-fournisseur-dto-res";
-import { LigneCommandeClientDto } from "../../../gs-api/src/models/ligne-commande-client-dto";
-import { CmdcltfrsService } from "../../services/cmdcltfrs/cmdcltfrs.service";
-import { Router } from "@angular/router";
-//import { CltfrsService } from "../../services/cltfrs/cltfrs.service";
-
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CmdcltfrsService } from '../../services/cmdcltfrs/cmdcltfrs.service';
+import { CommandeClientDtoReq } from '../../../gs-api/src/models/commande-client-dto-req';
+import { CommandeFournisseurDtoRes } from '../../../gs-api/src/models/commande-fournisseur-dto-res';
+import { LigneCommandeClientDto } from '../../../gs-api/src/models/ligne-commande-client-dto';
 
 @Component({
   selector: 'app-page-cmd-clt-frs',
@@ -14,66 +12,75 @@ import { Router } from "@angular/router";
 })
 export class PageCmdCltFrsComponent implements OnInit {
 
-  @Input() origin: 'client' | 'fournisseur' = 'client';
-
-  listeCommandes: (CommandeClientDtoReq | CommandeFournisseurDtoRes)[] = [];
-  mapLignesCommande: Map<number, LigneCommandeClientDto[]> = new Map();
+  origin = '';
+  listeCommandes: Array<any> = [];
+  mapLignesCommande = new Map();
+  mapPrixTotalCommande = new Map();
 
   constructor(
-    private cmdCltFrsService:  CmdcltfrsService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private cmdCltFrsService: CmdcltfrsService
   ) {}
 
   ngOnInit(): void {
-    this.loadCommandes();
+    this.activatedRoute.data.subscribe(data => {
+      this.origin = data['origin'];
+      this.findAllCommandes();
+    });
   }
 
-  /**
-   * Load all commandes depending on origin
-   */
-  loadCommandes(): void {
+  findAllCommandes(): void {
     if (this.origin === 'client') {
-      this.cmdCltFrsService.findAllLignCommandClient().subscribe((cmds: CommandeClientDtoReq[]) => {
+      this.cmdCltFrsService.findAllCommandesClient().subscribe(cmds => {
         this.listeCommandes = cmds;
-        cmds.forEach(cmd => {
-          if (cmd.id) {
-            this.cmdCltFrsService.findAllLignCommandFournisseur(cmd.id).subscribe((lignes: LigneCommandeClientDto[]) => {
-              this.mapLignesCommande.set(cmd.id!, lignes);
-            });
-          }
-        });
+        this.findAllLignesCommande();
       });
     } else if (this.origin === 'fournisseur') {
-      this.cmdCltFrsService.findAllCommandesFournisseur().subscribe((cmds: CommandeFournisseurDtoRes[]) => {
+      this.cmdCltFrsService.findAllCommandesFournisseur().subscribe(cmds => {
         this.listeCommandes = cmds;
-        cmds.forEach(cmd => {
-          if (cmd.id) {
-            this.cmdCltFrsService.findAllLignCommandFournisseur(cmd.id).subscribe((lignes: LigneCommandeClientDto[]) => {
-              this.mapLignesCommande.set(cmd.id!, lignes);
-            });
-          }
-        });
+        this.findAllLignesCommande();
       });
     }
   }
 
-  /**
-   * Create new commande
-   */
+  findAllLignesCommande(): void {
+    this.listeCommandes.forEach(cmd => this.findLignesCommande(cmd.id));
+  }
+
+  findLignesCommande(idCommande?: number): void {
+    if (this.origin === 'client') {
+      this.cmdCltFrsService.findAllLigneCommandesClient(idCommande).subscribe(list => {
+        this.mapLignesCommande.set(idCommande, list);
+        this.mapPrixTotalCommande.set(idCommande, this.calculerTotalCmd(list));
+      });
+    } else if (this.origin === 'fournisseur') {
+      this.cmdCltFrsService.findAllLigneCommandesFournisseur(idCommande).subscribe(list => {
+        this.mapLignesCommande.set(idCommande, list);
+        this.mapPrixTotalCommande.set(idCommande, this.calculerTotalCmd(list));
+      });
+    }
+  }
+
+  calculerTotalCmd(list: Array<LigneCommandeClientDto>): number {
+    let total = 0;
+    list.forEach(ligne => {
+      if (ligne.prixUnitaire && ligne.quantite) {
+        total += +ligne.quantite * +ligne.prixUnitaire;
+      }
+    });
+    return Math.floor(total);
+  }
+
+  calculerTotalCommande(id?: number): number {
+    return this.mapPrixTotalCommande.get(id);
+  }
+
   nouvelleCommande(): void {
     if (this.origin === 'client') {
       this.router.navigate(['nouvellecommandeclt']);
     } else {
       this.router.navigate(['nouvellecommandefrs']);
     }
-  }
-
-  /**
-   * Calculate total for one commande
-   */
-  calculerTotalCommande(idCommande: number): string {
-    const lignes = this.mapLignesCommande.get(idCommande) || [];
-    const total = lignes.reduce((sum, l) => sum + (l.prixUnitaire ?? 0) * (l.quantite ?? 0), 0);
-    return total.toLocaleString('fr-FR', { minimumFractionDigits: 1 }) + ' CFA';
   }
 }
