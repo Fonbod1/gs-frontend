@@ -55,7 +55,11 @@
 
       <!-- Client / Fournisseur Photo -->
       <div class="col-md-2 text-center" *ngIf="selectedClientFournisseur?.nom">
-        <img [src]="selectedClientFournisseur.photo ? selectedClientFournisseur.photo : 'assets/product.png'" class="rounded-circle" width="150px" height="150px" />
+        <<img #imgEl
+              [src]="selectedClientFournisseur.photo ? 'assets/' + selectedClientFournisseur.photo : 'assets/product.png'"
+              (error)="imgEl.src='assets/product.png'"
+              class="rounded-circle" width="150px" height="150px" />
+
       </div>
     </div>
 

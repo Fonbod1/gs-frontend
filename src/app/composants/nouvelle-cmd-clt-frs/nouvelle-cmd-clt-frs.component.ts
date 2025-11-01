@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ArticleDto } from '../../../gs-api/src/models/article-dto';
+import { ClientDto } from '../../../gs-api/src/models/client-dto';
+import { FournisseurDto } from '../../../gs-api/src/models/fournisseur-dto';
+import { LigneCommandeClientDto } from '../../../gs-api/src/models/ligne-commande-client-dto';
+import { CommandeClientDtoReq } from '../../../gs-api/src/models/commande-client-dto-req';
 
 import { CltfrsService } from '../../services/cltfrs/cltfrs.service';
 import { ArticleService } from '../../services/article/article.service';
-import {CommandeClientControllerService} from "../../../gs-api/src/services/commande-client-controller.service";
-import {ClientDto} from "../../../gs-api/src/models/client-dto";
-import {LigneCommandeClientDto} from "../../../gs-api/src/models/ligne-commande-client-dto";
-import {CommandeClientDtoReq} from "../../../gs-api/src/models/commande-client-dto-req";
+import { CommandeClientControllerService } from '../../../gs-api/src/services/commande-client-controller.service';
 
 @Component({
   selector: 'app-nouvelle-cmd-clt-frs',
@@ -18,8 +19,8 @@ import {CommandeClientDtoReq} from "../../../gs-api/src/models/commande-client-d
 export class NouvelleCmdCltFrsComponent implements OnInit {
 
   origin = '';
-  selectedClientFournisseur: ClientDto | any = {};
-  listClientsFournisseurs: Array<ClientDto | any> = [];
+  selectedClientFournisseur: ClientDto | FournisseurDto | any = {};
+  listClientsFournisseurs: Array<ClientDto | FournisseurDto | any> = [];
 
   searchedArticle: ArticleDto | null = null;
   listArticle: Array<ArticleDto> = [];
@@ -51,12 +52,16 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
 
   private loadClientsOrFournisseurs(): void {
     if (this.origin === 'client') {
-      this.cltFrsService.findAllClient().subscribe(clients => {
+      this.cltFrsService.findAllClients().subscribe((clients: ClientDto[]) => {
         this.listClientsFournisseurs = clients;
+      }, error => {
+        console.error('Erreur lors du chargement des clients:', error);
       });
     } else if (this.origin === 'fournisseur') {
-      this.cltFrsService.findAllFournisseur().subscribe(fournisseurs => {
+      this.cltFrsService.findAllFournisseurs().subscribe((fournisseurs: FournisseurDto[]) => {
         this.listClientsFournisseurs = fournisseurs;
+      }, error => {
+        console.error('Erreur lors du chargement des fournisseurs:', error);
       });
     }
   }
@@ -66,11 +71,11 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
       this.listArticle = articles;
     });
   }
+
   findAllArticles(): void {
-    this.articleService.findAllArticle() // <-- use the exact method name
-      .subscribe(articles => {
-        this.listArticle = articles;
-      });
+    this.articleService.findAllArticle().subscribe(articles => {
+      this.listArticle = articles;
+    });
   }
 
   findArticleByCode(codeArticle: string): void {
@@ -99,20 +104,22 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
       });
       return;
     }
+
     const search = this.codeArticle.toLowerCase();
     this.listArticle = this.listArticle.filter(art =>
       art.codeArticle?.toLowerCase().startsWith(search) ||
       art.designation?.toLowerCase().startsWith(search)
     );
   }
+
   filtrerArticle(): void {
     if (this.codeArticle.length === 0) {
       this.findAllArticles();
     }
-    this.listArticle = this.listArticle
-      .filter(art => art.codeArticle?.includes(this.codeArticle) || art.designation?.includes(this.codeArticle));
+    this.listArticle = this.listArticle.filter(
+      art => art.codeArticle?.includes(this.codeArticle) || art.designation?.includes(this.codeArticle)
+    );
   }
-
 
   ajouterLigneCommande(): void {
     if (!this.searchedArticle?.id || !this.quantite) {
@@ -125,7 +132,6 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
     );
 
     if (ligneCmdAlreadyExist) {
-      // Update existing quantity
       ligneCmdAlreadyExist.quantite = (ligneCmdAlreadyExist.quantite || 0) + +this.quantite;
     } else {
       const ligne: LigneCommandeClientDto = {
@@ -135,19 +141,13 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
       };
       this.lignesCommande.push(ligne);
     }
-      this.totalCommande = 0;
+
     this.updateTotalCommande();
     this.resetArticleSelection();
   }
 
   private updateTotalCommande(): void {
-    this.checkLigneCommande()
-    this.calculerTotalCommande()
-   /* this.totalCommande = this.lignesCommande.reduce((total, ligne) => {
-      const prix = ligne.prixUnitaire || 0;
-      const quantite = ligne.quantite || 0;
-      return total + prix * quantite;
-    }, 0);*/
+    this.calculerTotalCommande();
   }
 
   private resetArticleSelection(): void {
@@ -156,8 +156,9 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
     this.codeArticle = '';
     this.articleNotYetSelected = false;
     this.articleErrorMsg = '';
-    this.findAllArticles()
+    this.findAllArticles();
   }
+
   calculerTotalCommande(): void {
     this.totalCommande = 0;
     this.lignesCommande.forEach(ligne => {
@@ -167,44 +168,9 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
     });
   }
 
-
-  private checkLigneCommande(): void {
-    if (!this.searchedArticle) {
-      this.articleErrorMsg = 'Veuillez sélectionner un article';
-      return; // exit if no article is selected
-    }
-
-    const ligneCmdAlreadyExists = this.lignesCommande.find(
-      lig => lig.article?.codeArticle === this.searchedArticle?.codeArticle
-    );
-
-    if (ligneCmdAlreadyExists) {
-      this.lignesCommande.forEach(lig => {
-        if (lig && lig.article?.codeArticle === this.searchedArticle?.codeArticle) {
-          lig.quantite = (lig.quantite || 0) + +this.quantite;
-        }
-      });
-    } else {
-      const ligneCmd: LigneCommandeClientDto = {
-        article: this.searchedArticle,              // safe: guaranteed non-null
-        prixUnitaire: this.searchedArticle.prixUnitaireTtc || 0, // fallback if undefined
-        quantite: +this.quantite
-      };
-      this.lignesCommande.push(ligneCmd);
-    }
-  }
-
-
-
-
   cancelClick(): void {
     const route = this.origin === 'client' ? '/commandes-clients' : '/commandes-fournisseurs';
     this.router.navigate([route]);
-  }
-
-  saveClick(): void {
-    // TODO: implement save logic later
-    console.log('Commande à sauvegarder :', this.lignesCommande);
   }
 
   selectArticleClick(article: ArticleDto): void {
@@ -214,19 +180,19 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
   }
 
   enregistrerCommande(): void {
-    const commande = this.preparerCommande()
     if (!this.selectedClientFournisseur || this.lignesCommande.length === 0) {
       this.errorMsg = ['Veuillez sélectionner un client/fournisseur et ajouter au moins un article.'];
       return;
     }
 
+    // Only handle client orders here
     const commandeClient: CommandeClientDtoReq = {
-      client: this.selectedClientFournisseur,
+      client: this.origin === 'client' ? this.selectedClientFournisseur : undefined,
       code: 'CMD-' + new Date().getTime(),
       etatCommande: 'EN_PREPARATION',
       idEntreprise: 1,
       dateCommande: new Date().toISOString(),
-      ligneCommandeClients: this.lignesCommande
+      ligneCommandeClients: this.origin === 'client' ? this.lignesCommande : undefined
     };
 
     this.commandeClientService.saveUsingPOST3(commandeClient).subscribe({
@@ -240,26 +206,5 @@ export class NouvelleCmdCltFrsComponent implements OnInit {
       }
     });
   }
-
-  private preparerCommande(): any {
-    if (this.origin === 'client') {
-      return  {
-        client: this.selectedClientFournisseur,
-        code: this.codeCommande,
-        dateCommande: new Date().getTime(),
-        etatCommande: 'EN_PREPARATION',
-        ligneCommandeClients: this.lignesCommande
-      };
-    } else if (this.origin === 'fournisseur') {
-      return  {
-        fournisseur: this.selectedClientFournisseur,
-        code: this.codeCommande,
-        dateCommande: new Date().getTime(),
-        etatCommande: 'EN_PREPARATION',
-        ligneCommandeFournisseurs: this.lignesCommande
-      };
-    }
-  }
-
 
 }

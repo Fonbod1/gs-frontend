@@ -1,64 +1,57 @@
 <div class="row mb-1 mr-0 custom-border">
-  <!-- Image column -->
-  <div class="col-md-1 border-right p-1 text-center my-1">
-    <img src="assets/product.png" width="100" height="100">
+  <div class="col-md-1 custom-border-right p-1 text-center mb-1 mt-1 ">
+    <img src="assets/product.png" width="100px" height="100px">
   </div>
 
-  <!-- detail article -->
-  <div class="col-md-5 border-right my-1">
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fa-solid fa-circle-info blue-color"></i>
+  <!--  Details article-->
+  <div class="col-md-5 custom-border-right mb-1 mt-1 ">
+    <div class="col">
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-info-circle blue-color"></i></div>
+        <div class="col-md-10">{{ cltFrs?.nom }}</div>
       </div>
-      <div class="col">Nom</div>
-    </div>
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fa-solid fa-circle-info blue-color"></i>
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-info-circle blue-color"></i></div>
+        <div class="col-md-10">{{ cltFrs?.prenom }}</div>
       </div>
-      <div class="col">Prenom</div>
-    </div>
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fas fa-phone-alt blue-color"></i>
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-phone-alt blue-color"></i></div>
+        <div class="col-md-10">{{ cltFrs?.numTel }}</div>
       </div>
-      <div class="col">011 22 33 44 95 66</div>
     </div>
   </div>
 
-  <!-- Detail command -->
-  <div class="col-md-3 border-right my-1">
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fas fa-qrcode blue-color"></i>
+  <!--  details commande-->
+  <div class="col-md-3 custom-border-right mb-1 mt-1 ">
+    <div class="col">
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-qrcode blue-color"></i></div>
+        <div class="col-md-10">{{ commande.code }}</div>
       </div>
-      <div class="col">CMD 1234</div>
-    </div>
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fas fa-calendar-check blue-color"></i>
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-calendar-check blue-color"></i></div>
+        <div class="col-md-10">{{ commande.dateCommande }}</div>
       </div>
-      <div class="col">12.12.2025</div>
-    </div>
-    <div class="row mb-1 align-items-center">
-      <div class="col-auto">
-        <i class="fas fa-cart-arrow-down blue-color"></i>
+      <div class="row">
+        <div class="col-md-1"><i class="fas fa-cart-arrow-down blue-color"></i></div>
+        <div class="col-md-10">{{ commande.etatCommande }}</div>
       </div>
-      <div class="col">LIVREE</div>
     </div>
   </div>
 
-  <!-- Buttons action -->
-  <div class="col-md-3 my-1">
+  <!--  boutons action-->
+  <div class="col-md-3 mb-1 mt-1 ">
     <div class="row">
-      <div class="col-md-6">
-        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          <i class="fas fa-pencil-alt blue-color"></i>&nbsp;Modifier
+      <div class="col-md-6 text-center">
+        <button type="button" class="btn btn-link" (click)="modifierClick()">
+          <i class="fas fa-pencil-alt blue-color"></i>&nbsp;
+          Modifier
         </button>
       </div>
-      <div class="col-md-6">
-        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          <i class="fas fa-trash-alt blue-color"></i>&nbsp;Supprimer
+      <div class="col-md-6 text-center">
+        <button type="button" class="btn btn-link">
+          <i class="fas fa-trash-alt blue-color"></i>&nbsp;
+          Supprimer
         </button>
       </div>
     </div>

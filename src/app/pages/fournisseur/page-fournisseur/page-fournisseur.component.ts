@@ -22,16 +22,17 @@ export class PageFournisseurComponent implements OnInit {
 
   constructor(
     private router: Router,
+    //private cltfrsService: CmdcltfrsService,
     private cltfrsService: CltfrsService,
     private photoService: PhotoControllerService
   ) {}
 
   ngOnInit(): void {
-    this.findAllFournisseur();
+    this.findAllFournisseurs();
   }
 
-  findAllFournisseur(): void {
-    this.cltfrsService.findAllFournisseur().subscribe({
+  findAllFournisseurs(): void {
+    this.cltfrsService.findAllFournisseurs().subscribe({
       next: (fournisseurs) => this.listFournisseur = fournisseurs,
       error: () => this.errorMsg = 'Erreur lors du chargement des fournisseurs'
     });
@@ -43,7 +44,7 @@ export class PageFournisseurComponent implements OnInit {
 
   handleSuppression(event: string): void {
     if (event === 'success') {
-      this.findAllFournisseur();
+      this.findAllFournisseurs();
     } else {
       this.errorMsg = event;
     }
@@ -77,7 +78,7 @@ export class PageFournisseurComponent implements OnInit {
 
       this.photoService.savePhotoUsingPOST(params).subscribe({
         next: () => {
-          this.findAllFournisseur(); // Refresh list to show updated photo
+          this.findAllFournisseurs(); // Refresh list to show updated photo
           this.selectedFile = null;
           this.currentFournisseurId = undefined;
         },

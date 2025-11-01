@@ -22,7 +22,7 @@ export class PageClientComponent implements OnInit {
   }
 
   findAllClient(): void{
-    this.cltfrsService.findAllClient()
+    this.cltfrsService.findAllClients()
       .subscribe(clients =>{
         this.listClient = clients;
       })

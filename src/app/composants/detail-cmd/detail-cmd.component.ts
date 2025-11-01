@@ -8,12 +8,26 @@ import {LigneCommandeClientDto} from "../../../gs-api/src/models/ligne-commande-
   styleUrls: ['./detail-cmd.component.scss']
 })
 export class DetailCmdComponent implements OnInit {
+ // @Input()
+ // origin = '';
+
   @Input()
   ligneCommande: LigneCommandeClientDto = {};
+
+  /*set idCommand(idCommande: number){
+    this.idCommand = idCommande;
+  }*/
+
 
   constructor() { }
 
   ngOnInit(): void {
   }
+
+
+  //}
+
+
+
 
 }
